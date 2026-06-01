@@ -37,7 +37,7 @@ export async function runDoctor(pi: ExtensionAPI, cwd?: string): Promise<Check[]
 
 	try {
 		const { stdout } = await pi.exec("glab", ["--version"]);
-		const versionMatch = stdout.match(/glab version ([\d.]+)/);
+		const versionMatch = stdout.match(/glab ([\d.]+)/);
 		if (!versionMatch) {
 			checks.push({
 				label: "glab CLI",
