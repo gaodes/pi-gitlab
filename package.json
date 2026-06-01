@@ -1,6 +1,6 @@
 {
 	"name": "@gaodes/pi-gitlab",
-	"version": "0.4.1",
+	"version": "0.4.2",
 	"description": "Pi extension package for GitLab workflows via glab CLI with in-package skills.",
 	"keywords": [
 		"pi-package",

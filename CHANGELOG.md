@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-06-01
+
+### Fixed
+- Auto-derive apiBase from hostname in loadConfig and writeConfig when apiBase is not explicitly set
+
 ## [0.4.1] - 2026-06-01
 
 ### Changed

@@ -98,6 +98,11 @@ export function loadConfig(cwd?: string): PiGitlabConfig {
 		}
 	}
 
+	// Auto-derive apiBase from hostname if not explicitly set
+	if (base.hostname && !base.apiBase) {
+		base.apiBase = `https://${base.hostname}/api/v4`;
+	}
+
 	return base;
 }
 
@@ -160,6 +165,11 @@ export function writeConfig(
 		render: { ...base.render, ...(overrides.render ?? {}) },
 		safety: { ...base.safety, ...(overrides.safety ?? {}) },
 	};
+
+	// Auto-derive apiBase from hostname if not explicitly set
+	if (merged.hostname && !merged.apiBase) {
+		merged.apiBase = `https://\${merged.hostname}/api/v4`;
+	}
 
 	writeGlobalSettings({
 		...existing,
