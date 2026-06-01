@@ -3,9 +3,9 @@ import type {
 	ExtensionContext,
 } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
+import { requireConfirm } from "../lib/confirm.js";
 import { requireSetup, setupRequiredResult } from "../lib/errors.js";
 import { glab } from "../lib/glab.js";
-import { requireConfirm } from "../lib/confirm.js";
 import { resolveProject } from "../lib/projectFallback.js";
 import { resolveProjectId } from "../lib/resolveProjectId.js";
 import { OptionalProject } from "../lib/schemas.js";
@@ -85,7 +85,9 @@ export function registerGitlabMrBulkApprove(pi: ExtensionAPI) {
 
 			const lines: string[] = [];
 			if (succeeded.length > 0) {
-				lines.push(`✅ Approved ${succeeded.length} MR(s): ${succeeded.map((r) => `!${r.mrIid}`).join(", ")}`);
+				lines.push(
+					`✅ Approved ${succeeded.length} MR(s): ${succeeded.map((r) => `!${r.mrIid}`).join(", ")}`,
+				);
 			}
 			if (failed.length > 0) {
 				lines.push(`\n❌ Failed ${failed.length}:`);

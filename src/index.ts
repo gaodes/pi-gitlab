@@ -24,7 +24,12 @@
  *   gitlab_mr_bulk_approve  — bulk-approve MRs (confirm:true)
  *   gitlab_force_push_safe  — safe force push with branch protection lifecycle (confirm:true)
  *
- * Commands:
+ * Phase 4 search, CI lint, and repo tools:
+ *   gitlab_search_query     — search GitLab across multiple scopes
+ *   gitlab_ci_lint          — validate .gitlab-ci.yml configuration
+ *   gitlab_repo_view        — view project/repository info
+ *
+ * In-package skills (0.3.0):
  *   /gitlab-doctor — diagnostic check for glab, auth, API, and config
  *
  * Configuration lives in prime-settings.json key `pi-gitlab`.
@@ -34,6 +39,7 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { gitlabDoctorCommand } from "./commands/gitlab-doctor.js";
 import { registerResourcesDiscover } from "./events/resourcesDiscover.js";
 import { registerGitlabApi } from "./tools/gitlab_api.js";
+import { registerGitlabCiLint } from "./tools/gitlab_ci_lint.js";
 import { registerGitlabForcePushSafe } from "./tools/gitlab_force_push_safe.js";
 import { registerGitlabIssueClose } from "./tools/gitlab_issue_close.js";
 import { registerGitlabIssueCreate } from "./tools/gitlab_issue_create.js";
@@ -50,6 +56,8 @@ import { registerGitlabProjectResolve } from "./tools/gitlab_project_resolve.js"
 import { registerGitlabReleaseCreate } from "./tools/gitlab_release_create.js";
 import { registerGitlabReleaseList } from "./tools/gitlab_release_list.js";
 import { registerGitlabReleaseView } from "./tools/gitlab_release_view.js";
+import { registerGitlabRepoView } from "./tools/gitlab_repo_view.js";
+import { registerGitlabSearchQuery } from "./tools/gitlab_search_query.js";
 
 export default function piGitlab(pi: ExtensionAPI) {
 	// Expose in-package skills
@@ -84,4 +92,9 @@ export default function piGitlab(pi: ExtensionAPI) {
 	registerGitlabReleaseCreate(pi);
 	registerGitlabMrBulkApprove(pi);
 	registerGitlabForcePushSafe(pi);
+
+	// Phase 4 search, CI lint, and repo tools
+	registerGitlabSearchQuery(pi);
+	registerGitlabCiLint(pi);
+	registerGitlabRepoView(pi);
 }

@@ -44,14 +44,19 @@ export function registerGitlabReleaseView(pi: ExtensionAPI) {
 			])) as Record<string, unknown>;
 
 			const assets = release.assets as Record<string, unknown> | undefined;
-			const links = (assets?.links as Array<Record<string, unknown>> | undefined) ?? [];
+			const links =
+				(assets?.links as Array<Record<string, unknown>> | undefined) ?? [];
 
 			const lines: string[] = [];
 			lines.push(`## Release: ${release.tag_name}`);
 			if (release.name) lines.push(`**Name:** ${release.name}`);
-			lines.push(`**Author:** ${(release.author as Record<string, unknown>)?.name ?? "-"}`);
+			lines.push(
+				`**Author:** ${(release.author as Record<string, unknown>)?.name ?? "-"}`,
+			);
 			if (release.created_at)
-				lines.push(`**Created:** ${new Date(release.created_at as string).toISOString()}`);
+				lines.push(
+					`**Created:** ${new Date(release.created_at as string).toISOString()}`,
+				);
 			if (release.upcoming_release) lines.push("**Upcoming release:** yes");
 
 			if (release.description) {

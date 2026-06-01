@@ -32,7 +32,10 @@ function versionSatisfies(installed: string, required: string): boolean {
 	return patI >= patR;
 }
 
-export async function runDoctor(pi: ExtensionAPI, cwd?: string): Promise<Check[]> {
+export async function runDoctor(
+	pi: ExtensionAPI,
+	cwd?: string,
+): Promise<Check[]> {
 	const checks: Check[] = [];
 
 	try {
@@ -59,7 +62,8 @@ export async function runDoctor(pi: ExtensionAPI, cwd?: string): Promise<Check[]
 		checks.push({
 			label: "glab CLI",
 			status: "fail",
-			detail: "glab not found in PATH. Install from: https://gitlab.com/gitlab-org/cli#installation",
+			detail:
+				"glab not found in PATH. Install from: https://gitlab.com/gitlab-org/cli#installation",
 		});
 	}
 
@@ -145,7 +149,8 @@ async function runSetupWizard(ctx: ExtensionContext): Promise<boolean> {
 	if (!proceed) return false;
 
 	const hostname =
-		(await ctx.ui.input("GitLab hostname", current.hostname)) ?? current.hostname;
+		(await ctx.ui.input("GitLab hostname", current.hostname)) ??
+		current.hostname;
 	const sshHostname =
 		(await ctx.ui.input("GitLab SSH hostname", current.sshHostname)) ??
 		current.sshHostname;
@@ -183,7 +188,10 @@ async function runSetupWizard(ctx: ExtensionContext): Promise<boolean> {
 		defaultProjectPath,
 	});
 
-	ctx.ui.notify("Saved pi-gitlab configuration to global prime-settings.json", "info");
+	ctx.ui.notify(
+		"Saved pi-gitlab configuration to global prime-settings.json",
+		"info",
+	);
 
 	if (!process.env[tokenEnv] || process.env[tokenEnv]?.trim().length === 0) {
 		ctx.ui.notify(

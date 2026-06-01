@@ -1,7 +1,7 @@
 ---
 name: gitlab-workflow
 description: >
-  Cross-domain GitLab workflow orchestration on gitlab.elches.dev.
+  Cross-domain GitLab workflow orchestration on the configured GitLab instance.
   Combines tools into multi-step flows like release cut, hotfix, and
   issue-to-MR pipelines. Routes to focused skills for individual steps.
 ---

@@ -1,6 +1,6 @@
 # @gaodes/pi-gitlab
 
-Pi extension package for GitLab workflows on `gitlab.elches.dev` using `glab` + in-package skills.
+Pi extension package for GitLab workflows using `glab` + in-package skills.
 
 ## Install
 
@@ -95,9 +95,9 @@ Key: `pi-gitlab` in `~/.pi/agent/prime-settings.json`
 ```json
 {
   "pi-gitlab": {
-    "hostname": "gitlab.elches.dev",
-    "sshHostname": "gitlab-ssh.elches.dev",
-    "sshPort": 2222,
+    "hostname": "gitlab.example.com",
+    "sshHostname": "gitlab-ssh.example.com",
+    "sshPort": 22,
     "tokenEnv": "PI_GITLAB_TOKEN",
     "defaultProjectPath": null,
     "render": {

@@ -23,10 +23,10 @@ export interface PiGitlabConfig {
 }
 
 export const DEFAULT_CONFIG: PiGitlabConfig = {
-	hostname: "gitlab.elches.dev",
-	sshHostname: "gitlab-ssh.elches.dev",
-	sshPort: 2222,
-	apiBase: "https://gitlab.elches.dev/api/v4",
+	hostname: "",
+	sshHostname: "",
+	sshPort: 22,
+	apiBase: "",
 	tokenRef: null,
 	tokenEnv: "PI_GITLAB_TOKEN",
 	defaultProjectId: null,

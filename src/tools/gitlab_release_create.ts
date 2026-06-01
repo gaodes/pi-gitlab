@@ -3,9 +3,9 @@ import type {
 	ExtensionContext,
 } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
+import { requireConfirm } from "../lib/confirm.js";
 import { requireSetup, setupRequiredResult } from "../lib/errors.js";
 import { glab } from "../lib/glab.js";
-import { requireConfirm } from "../lib/confirm.js";
 import { resolveProject } from "../lib/projectFallback.js";
 import { resolveProjectId } from "../lib/resolveProjectId.js";
 import { OptionalProject } from "../lib/schemas.js";
@@ -14,8 +14,7 @@ export function registerGitlabReleaseCreate(pi: ExtensionAPI) {
 	pi.registerTool({
 		name: "gitlab_release_create",
 		label: "Create Release",
-		description:
-			"Create a new release for a tag. Requires confirmation.",
+		description: "Create a new release for a tag. Requires confirmation.",
 		parameters: Type.Object(
 			{
 				project: OptionalProject,

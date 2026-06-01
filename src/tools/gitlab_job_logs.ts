@@ -39,12 +39,12 @@ export function registerGitlabJobLogs(pi: ExtensionAPI) {
 			ctx: ExtensionContext,
 		) {
 			try {
-					requireSetup(ctx.cwd);
-				} catch {
-					return setupRequiredResult();
-				}
+				requireSetup(ctx.cwd);
+			} catch {
+				return setupRequiredResult();
+			}
 
-				const projectPath = await resolveProject(params.project, ctx.cwd);
+			const projectPath = await resolveProject(params.project, ctx.cwd);
 			const projectId = await resolveProjectId(projectPath);
 
 			const logText = (await glab([

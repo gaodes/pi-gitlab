@@ -1,8 +1,11 @@
-import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
+import type {
+	ExtensionAPI,
+	ExtensionContext,
+} from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
+import { requireConfirm } from "../lib/confirm.js";
 import { requireSetup, setupRequiredResult } from "../lib/errors.js";
 import { glab } from "../lib/glab.js";
-import { requireConfirm } from "../lib/confirm.js";
 import { resolveProject } from "../lib/projectFallback.js";
 import { resolveProjectId } from "../lib/resolveProjectId.js";
 import { OptionalProject } from "../lib/schemas.js";
@@ -16,13 +19,21 @@ export function registerGitlabPipelineRun(pi: ExtensionAPI) {
 			{
 				project: OptionalProject,
 				ref: Type.String({ description: "Branch or tag to run pipeline for" }),
-				variables: Type.Optional(Type.Object({}, { additionalProperties: true })),
+				variables: Type.Optional(
+					Type.Object({}, { additionalProperties: true }),
+				),
 				confirm: Type.Optional(Type.Boolean({ default: false })),
 				dryRun: Type.Optional(Type.Boolean({ default: false })),
 			},
 			{ additionalProperties: false },
 		),
-		async execute(_toolCallId, params, _signal, _onUpdate, ctx: ExtensionContext) {
+		async execute(
+			_toolCallId,
+			params,
+			_signal,
+			_onUpdate,
+			ctx: ExtensionContext,
+		) {
 			try {
 				requireSetup(ctx.cwd);
 			} catch {
@@ -34,15 +45,20 @@ export function registerGitlabPipelineRun(pi: ExtensionAPI) {
 			const projectId = await resolveProjectId(projectPath);
 
 			const preview = `Trigger pipeline for \`${params.ref}\`\nProject: \`${projectPath}\``;
-			const blocked = requireConfirm(preview, { confirm: params.confirm, dryRun: params.dryRun });
+			const blocked = requireConfirm(preview, {
+				confirm: params.confirm,
+				dryRun: params.dryRun,
+			});
 			if (blocked) return blocked;
 
 			const body: Record<string, unknown> = { ref: params.ref };
 			if (params.variables && Object.keys(params.variables).length > 0) {
-				body.variables = Object.entries(params.variables).map(([key, value]) => ({
-					key,
-					value: String(value),
-				}));
+				body.variables = Object.entries(params.variables).map(
+					([key, value]) => ({
+						key,
+						value: String(value),
+					}),
+				);
 			}
 
 			const result = await glab([
@@ -50,7 +66,10 @@ export function registerGitlabPipelineRun(pi: ExtensionAPI) {
 				"-X",
 				"POST",
 				`projects/${projectId}/pipeline`,
-				...Object.entries(body).flatMap(([k, v]) => ["-f", `${k}=${typeof v === "string" ? v : JSON.stringify(v)}`]),
+				...Object.entries(body).flatMap(([k, v]) => [
+					"-f",
+					`${k}=${typeof v === "string" ? v : JSON.stringify(v)}`,
+				]),
 			]);
 
 			const pipeline = result as Record<string, unknown>;

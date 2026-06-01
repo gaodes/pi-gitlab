@@ -7,8 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-06-01
+
 ### Changed
-- Default token environment variable renamed from `GITLAB_TOKEN` to `PI_GITLAB_TOKEN` to avoid collisions with other tools. The `tokenEnv` setting still allows overriding to any custom env var.
+- Removed hardcoded personal GitLab instance hostname from `DEFAULT_CONFIG` — defaults are now empty strings, forcing users through setup wizard on first use
+- Replaced personal instance references in skills and README with generic placeholder text
+- Fixed lint warnings across codebase (unused imports, formatting)
+
+## [0.4.0] - 2026-06-01
+
+### Added (Phase 4 — 15 new skills + 3 new tools)
+
+**New skills:**
+- `gitlab-badge` — project badge management (list, create, update, delete, preview)
+- `gitlab-ci` — CI/CD pipeline and job operations (status, run, retry, trace, lint, artifacts)
+- `gitlab-container` — container registry management (repositories, tags, cleanup)
+- `gitlab-discussion` — threaded discussion management on MRs and issues
+- `gitlab-file` — repository file operations via API (read, blame, create, update, delete)
+- `gitlab-group` — group management (list, create, members, subgroups, projects)
+- `gitlab-label` — label management via CLI and API
+- `gitlab-milestone` — milestone and sprint management via CLI and API
+- `gitlab-protected-branch` — branch protection rule management
+- `gitlab-repo` — repository/project operations (clone, fork, view, create, archive)
+- `gitlab-search` — search across GitLab (projects, issues, MRs, code, commits, users, wiki)
+- `gitlab-variable` — CI/CD variable management via CLI and API
+- `gitlab-vulnerability` — security vulnerability management (list, confirm, dismiss, resolve)
+- `gitlab-webhook` — webhook management (list, create, update, delete, test)
+- `gitlab-wiki` — wiki page management (list, read, create, update, delete, attachments)
+
+**New tools:**
+- `gitlab_search_query` — structured search across GitLab globally, within a group, or project
+- `gitlab_ci_lint` — validate `.gitlab-ci.yml` configuration via CI lint API
+- `gitlab_repo_view` — view detailed project/repository info with stats
+
+### Changed
+- Updated `index.ts` header docstring to include Phase 4 tools and skills
 
 ## [0.3.0] - 2026-06-01
 
@@ -21,6 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - All Phase 3 tools are confirm-gated following the same `requireConfirm` pattern as Phase 2
+- Default token environment variable renamed from `GITLAB_TOKEN` to `PI_GITLAB_TOKEN` to avoid collisions with other tools. The `tokenEnv` setting still allows overriding to any custom env var.
 
 ## [0.2.0] - 2026-06-01
 

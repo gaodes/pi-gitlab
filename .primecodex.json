@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"updatedAt": "2026-06-01T08:10:00+0300",
+	"updatedAt": "2026-06-01T08:15:00+0300",
 	"kind": "package",
 	"name": "pi-gitlab",
 	"source": "ssh://git@gitlab-ssh.elches.dev:2222/agents/primecodex/packages/pi-gitlab.git",
@@ -13,7 +13,7 @@
 	"npm": {
 		"name": "@gaodes/pi-gitlab",
 		"scope": "@gaodes",
-		"published": false,
-		"publishedUnderGaodes": false
+		"published": true,
+		"publishedUnderGaodes": true
 	}
 }

@@ -6,14 +6,13 @@
  * removed from extension load; seeding now lives in explicit doctor/setup flows.
  */
 
-import { checkSetup } from "../config/guard.js";
 import {
-	GLOBAL_SETTINGS_PATH,
 	ensureConfig,
+	GLOBAL_SETTINGS_PATH,
 	loadConfig,
 } from "../config/loader.js";
 
-export { GLOBAL_SETTINGS_PATH, ensureConfig, loadConfig };
+export { ensureConfig, GLOBAL_SETTINGS_PATH, loadConfig };
 
 // ---------------------------------------------------------------------------
 // Token access

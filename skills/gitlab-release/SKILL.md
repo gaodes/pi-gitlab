@@ -2,7 +2,7 @@
 name: gitlab-release
 description: >
   GitLab release management. Use for listing, viewing, and creating
-  releases tied to Git tags on gitlab.elches.dev. Requires glab and
+  releases tied to Git tags on the configured GitLab instance. Requires glab and
   confirm for mutating operations.
 ---
 

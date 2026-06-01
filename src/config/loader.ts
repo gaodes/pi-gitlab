@@ -145,7 +145,9 @@ export function ensureConfig(): void {
 	});
 }
 
-export function writeConfig(overrides: Partial<PiGitlabConfig>): PiGitlabConfig {
+export function writeConfig(
+	overrides: Partial<PiGitlabConfig>,
+): PiGitlabConfig {
 	const existing = readGlobalSettings();
 	const base = cloneDefaults();
 	if (existing["pi-gitlab"] && typeof existing["pi-gitlab"] === "object") {

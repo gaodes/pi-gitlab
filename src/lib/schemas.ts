@@ -3,7 +3,7 @@ import { Type } from "typebox";
 export const OptionalProject = Type.Optional(
 	Type.String({
 		description:
-			"Project path (e.g. 'agents/primecodex/packages/pi-gitlab') or numeric ID. Optional — falls back to CWD git remote, then settings default.",
+			"Project path (e.g. 'group/project') or numeric ID. Optional — falls back to CWD git remote, then settings default.",
 	}),
 );
 

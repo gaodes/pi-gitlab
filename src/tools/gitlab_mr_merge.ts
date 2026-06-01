@@ -3,9 +3,9 @@ import type {
 	ExtensionContext,
 } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
+import { requireConfirm } from "../lib/confirm.js";
 import { requireSetup, setupRequiredResult } from "../lib/errors.js";
 import { glab } from "../lib/glab.js";
-import { requireConfirm } from "../lib/confirm.js";
 import { resolveProject } from "../lib/projectFallback.js";
 import { resolveProjectId } from "../lib/resolveProjectId.js";
 import { OptionalProject } from "../lib/schemas.js";
@@ -20,9 +20,7 @@ export function registerGitlabMrMerge(pi: ExtensionAPI) {
 				project: OptionalProject,
 				mrId: Type.Number({ description: "MR IID" }),
 				squash: Type.Optional(Type.Boolean({ default: false })),
-				removeSourceBranch: Type.Optional(
-					Type.Boolean({ default: false }),
-				),
+				removeSourceBranch: Type.Optional(Type.Boolean({ default: false })),
 				confirm: Type.Optional(Type.Boolean({ default: false })),
 				dryRun: Type.Optional(Type.Boolean({ default: false })),
 			},

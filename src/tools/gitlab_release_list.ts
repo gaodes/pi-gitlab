@@ -23,19 +23,14 @@ export function registerGitlabReleaseList(pi: ExtensionAPI) {
 	pi.registerTool({
 		name: "gitlab_release_list",
 		label: "List Releases",
-		description:
-			"List releases for a project with transparent pagination.",
+		description: "List releases for a project with transparent pagination.",
 		parameters: Type.Object(
 			{
 				project: OptionalProject,
 				sort: Type.Optional(
-					Type.Union(
-						[
-							Type.Literal("desc"),
-							Type.Literal("asc"),
-						],
-						{ default: "desc" },
-					),
+					Type.Union([Type.Literal("desc"), Type.Literal("asc")], {
+						default: "desc",
+					}),
 				),
 				maxRows: MaxRows,
 			},

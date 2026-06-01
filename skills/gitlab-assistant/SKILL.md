@@ -8,7 +8,7 @@ description: >
 
 # GitLab Assistant
 
-You are the entry point for GitLab workflows on `gitlab.elches.dev`.
+You are the entry point for GitLab workflows on `the configured GitLab instance`.
 
 ## Routing
 

@@ -1,15 +1,15 @@
+import { spawn } from "node:child_process";
 import type {
 	ExtensionAPI,
 	ExtensionContext,
 } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
+import { loadConfig } from "../config/loader.js";
+import { requireConfirm } from "../lib/confirm.js";
 import { requireSetup, setupRequiredResult } from "../lib/errors.js";
 import { glab } from "../lib/glab.js";
-import { requireConfirm } from "../lib/confirm.js";
-import { loadConfig } from "../config/loader.js";
 import { resolveProject } from "../lib/projectFallback.js";
 import { resolveProjectId } from "../lib/resolveProjectId.js";
-import { spawn } from "node:child_process";
 
 export function registerGitlabForcePushSafe(pi: ExtensionAPI) {
 	pi.registerTool({
@@ -129,7 +129,12 @@ export function registerGitlabForcePushSafe(pi: ExtensionAPI) {
 			// Step 3: Force push
 			try {
 				await runGitPush(
-					["push", "--force-with-lease", remote, `${params.branch}:${remoteBranch}`],
+					[
+						"push",
+						"--force-with-lease",
+						remote,
+						`${params.branch}:${remoteBranch}`,
+					],
 					ctx.cwd,
 				);
 			} catch (err) {
@@ -185,7 +190,11 @@ export function registerGitlabForcePushSafe(pi: ExtensionAPI) {
 						text: `✅ Force-push complete: \`${params.branch}\` → \`${remote}/${remoteBranch}\`${isProtected ? "\nBranch re-protected." : ""}`,
 					},
 				],
-				details: { success: true, branch: remoteBranch, wasProtected: isProtected },
+				details: {
+					success: true,
+					branch: remoteBranch,
+					wasProtected: isProtected,
+				},
 			};
 		},
 	});
@@ -221,10 +230,7 @@ async function reprotectBranch(
 	}
 }
 
-async function runGitPush(
-	args: string[],
-	cwd?: string,
-): Promise<void> {
+async function runGitPush(args: string[], cwd?: string): Promise<void> {
 	await new Promise<void>((resolve, reject) => {
 		const child = spawn("git", args, {
 			cwd,
@@ -240,7 +246,9 @@ async function runGitPush(
 				resolve();
 				return;
 			}
-			reject(new Error(stderr.trim() || `git push exited with code ${code ?? -1}`));
+			reject(
+				new Error(stderr.trim() || `git push exited with code ${code ?? -1}`),
+			);
 		});
 	});
 }
