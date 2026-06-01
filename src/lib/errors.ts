@@ -98,7 +98,7 @@ export function mapGlabError(
 // SetupRequiredError — Phase 1C: setup guard integration
 // ---------------------------------------------------------------------------
 
-import { isConfigured } from "./env.js";
+import { checkSetup } from "../config/guard.js";
 
 /**
  * Error thrown when GitLab is not configured.
@@ -113,14 +113,17 @@ export class SetupRequiredError extends Error {
 }
 
 /**
- * Guard: throws SetupRequiredError if GitLab is not configured.
+ * Guard: throws SetupRequiredError if GitLab is not fully configured.
  * Call at the top of each tool's execute() function.
  *
- * Phase 1C setup guard — blocks tool usage until the user completes
- * /gitlab-doctor and supplies GITLAB_TOKEN or pi-gitlab.token in prime-settings.json.
+ * Phase 1 hard guard — blocks tool usage until both the token and
+ * explicit pi-gitlab config exist in prime-settings.json.
+ * Auto-seeding is intentionally removed from extension load; use
+ * /gitlab-doctor or explicit setup flows first.
  */
-export function requireSetup(): void {
-	if (isConfigured()) return;
+export function requireSetup(cwd?: string): void {
+	const status = checkSetup(cwd);
+	if (status.ready) return;
 
 	const message =
 		"GitLab is not configured for pi-gitlab. " +

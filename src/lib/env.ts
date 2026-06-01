@@ -1,12 +1,19 @@
 /**
  * Environment / config helpers for pi-gitlab.
+ *
+ * Phase 1 hard guard: tools must block until both GITLAB_TOKEN and
+ * pi-gitlab config are present. Auto-seeding is intentionally
+ * removed from extension load; seeding now lives in explicit doctor/setup flows.
  */
 
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { checkSetup } from "../config/guard.js";
-import { GLOBAL_SETTINGS_PATH, loadConfig } from "../config/loader.js";
+import {
+	GLOBAL_SETTINGS_PATH,
+	ensureConfig,
+	loadConfig,
+} from "../config/loader.js";
 
-export { checkSetup, GLOBAL_SETTINGS_PATH, loadConfig };
+export { GLOBAL_SETTINGS_PATH, ensureConfig, loadConfig };
 
 // ---------------------------------------------------------------------------
 // Token access
@@ -18,48 +25,6 @@ export function getToken(): string | undefined {
 	const envKey = config.tokenEnv || "GITLAB_TOKEN";
 	const val = process.env[envKey];
 	return val?.trim() ? val.trim() : undefined;
-}
-
-/** True when a valid token is available (env var or config). */
-export function isConfigured(): boolean {
-	return !!getToken();
-}
-
-// ---------------------------------------------------------------------------
-// Config seeding
-// ---------------------------------------------------------------------------
-
-/** Auto-seed default pi-gitlab config into global prime-settings.json if missing. */
-export function ensureConfig(): void {
-	let settings: Record<string, unknown> = {};
-	if (existsSync(GLOBAL_SETTINGS_PATH)) {
-		try {
-			settings = JSON.parse(readFileSync(GLOBAL_SETTINGS_PATH, "utf-8"));
-		} catch {
-			settings = {};
-		}
-	}
-	if (!settings["pi-gitlab"]) {
-		settings["pi-gitlab"] = {
-			hostname: "gitlab.elches.dev",
-			sshHostname: "gitlab-ssh.elches.dev",
-			sshPort: 2222,
-			apiBase: "https://gitlab.elches.dev/api/v4",
-			tokenRef: null,
-			tokenEnv: "GITLAB_TOKEN",
-			defaultProjectId: null,
-			defaultProjectPath: null,
-			render: { tableMaxRows: 25, diffMaxLines: 400, logTailLines: 200 },
-			safety: {
-				requireConfirmForDelete: true,
-				previewMutatingApiCalls: true,
-				redactJobLogsByDefault: true,
-				forcePushReprotectAlways: true,
-				minGlabVersion: "1.40.0",
-			},
-		};
-		writeFileSync(GLOBAL_SETTINGS_PATH, JSON.stringify(settings, null, 2));
-	}
 }
 
 // ---------------------------------------------------------------------------

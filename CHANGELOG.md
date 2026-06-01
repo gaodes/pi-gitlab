@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-06-01
+
+### Added (Phase 3 — Advanced tools + skills + release features)
+- **Release tools**: `gitlab_release_list`, `gitlab_release_view`, `gitlab_release_create`
+- **In-package skills**: populated `gitlab-assistant`, `gitlab-mr`, `gitlab-issue`, `gitlab-pipeline` with routing patterns and usage examples
+- **README**: comprehensive install and usage documentation
+
 ## [0.2.0] - 2026-06-01
 
 ### Added (Phase 2 — Mutating tools + confirmation UX)

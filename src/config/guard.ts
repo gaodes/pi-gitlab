@@ -18,6 +18,10 @@ export interface SetupStatus {
  * Returns ready=true only when both GITLAB_TOKEN is set AND the
  * pi-gitlab key exists in prime-settings.json (global or project).
  *
+ * The key alone is not enough; the extension intentionally blocks
+ * until the config is explicitly present. Auto-seeding remains
+ * available only inside explicit setup/doctor flows.
+ *
  * If ready=false, the extension entry should block all tool usage
  * and start the interactive setup wizard.
  */
@@ -28,10 +32,9 @@ export function checkSetup(cwd?: string): SetupStatus {
 	const tokenValue = process.env[config.tokenEnv];
 	const missingToken = !tokenValue || tokenValue.trim().length === 0;
 
-	let missingConfig = false;
-	if (!hasPiGitlabKeyInGlobal()) {
-		missingConfig = true;
-	}
+	const hasExplicitConfig =
+		hasPiGitlabKeyInGlobal() || hasPiGitlabKeyInProject(cwd);
+	const missingConfig = !hasExplicitConfig;
 
 	if (missingToken) {
 		issues.push(
@@ -59,6 +62,25 @@ export function checkSetup(cwd?: string): SetupStatus {
 function hasPiGitlabKeyInGlobal(): boolean {
 	try {
 		const path = join(homedir(), ".pi", "agent", "prime-settings.json");
+		if (!existsSync(path)) return false;
+		const raw = readFileSync(path, "utf-8");
+		const parsed: unknown = JSON.parse(raw);
+		return (
+			parsed !== null &&
+			typeof parsed === "object" &&
+			!Array.isArray(parsed) &&
+			"pi-gitlab" in parsed
+		);
+	} catch {
+		return false;
+	}
+}
+
+function hasPiGitlabKeyInProject(cwd?: string): boolean {
+	if (!cwd) return false;
+
+	try {
+		const path = join(cwd, ".pi", "prime-settings.json");
 		if (!existsSync(path)) return false;
 		const raw = readFileSync(path, "utf-8");
 		const parsed: unknown = JSON.parse(raw);

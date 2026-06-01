@@ -15,12 +15,9 @@ import type {
 	ExtensionAPI,
 	ExtensionContext,
 } from "@earendil-works/pi-coding-agent";
-import {
-	ensureConfig,
-	getApiHost,
-	isConfigured,
-	loadConfig,
-} from "../lib/env.js";
+import { getApiHost } from "../lib/env.js";
+import { checkSetup } from "../config/guard.js";
+import { ensureConfig } from "../config/loader.js";
 
 const MIN_GLAB_VERSION = "1.40.0";
 
@@ -44,7 +41,7 @@ function versionSatisfies(installed: string, required: string): boolean {
 	return patI >= patR;
 }
 
-export async function runDoctor(pi: ExtensionAPI): Promise<Check[]> {
+export async function runDoctor(pi: ExtensionAPI, cwd?: string): Promise<Check[]> {
 	const checks: Check[] = [];
 
 	// 1. glab installation and version
@@ -105,7 +102,7 @@ export async function runDoctor(pi: ExtensionAPI): Promise<Check[]> {
 	try {
 		const { code, stderr } = await pi.exec("glab", [
 			"api",
-			"/api/v4/version",
+			"version",
 			"--hostname",
 			apiHost,
 		]);
@@ -132,23 +129,31 @@ export async function runDoctor(pi: ExtensionAPI): Promise<Check[]> {
 
 	// 4. Config in prime-settings.json
 	ensureConfig();
-	const config = loadConfig();
-	const tokenFromEnv = process.env[config.tokenEnv];
-	const hasToken = Boolean(tokenFromEnv && tokenFromEnv.trim().length > 0);
+	const setupStatus = checkSetup(cwd);
+	const hasToken = !setupStatus.missingToken;
+	const hasExplicitConfig = !setupStatus.missingConfig;
 
 	checks.push({
 		label: "pi-gitlab config (prime-settings.json)",
 		status: hasToken ? "pass" : "fail",
 		detail: hasToken
-			? `Token sourced from ${config.tokenEnv} environment variable`
-			: `No token found. Set ${config.tokenEnv} or configure pi-gitlab.token in prime-settings.json. Target host: ${config.hostname}`,
+			? `Token sourced from ${setupStatus.config.tokenEnv} environment variable`
+			: `No token found. Set ${setupStatus.config.tokenEnv} or configure pi-gitlab.token in prime-settings.json. Target host: ${setupStatus.config.hostname}`,
+	});
+
+	checks.push({
+		label: "pi-gitlab config key",
+		status: hasExplicitConfig ? "pass" : "fail",
+		detail: hasExplicitConfig
+			? "pi-gitlab configuration found in prime-settings.json"
+			: "Missing pi-gitlab configuration in prime-settings.json. Run the setup wizard or manually add the pi-gitlab key before using tools.",
 	});
 
 	// 5. Overall status
 	checks.push({
 		label: "pi-gitlab ready",
-		status: isConfigured() ? "pass" : "fail",
-		detail: isConfigured()
+		status: setupStatus.ready ? "pass" : "fail",
+		detail: setupStatus.ready
 			? "All checks passed — pi-gitlab tools are available."
 			: "Configuration incomplete — pi-gitlab tools will return a setup error until resolved.",
 	});
@@ -162,7 +167,7 @@ export async function gitlabDoctorCommand(
 	ctx: ExtensionContext,
 	pi: ExtensionAPI,
 ): Promise<void> {
-	const checks = await runDoctor(pi);
+	const checks = await runDoctor(pi, ctx.cwd);
 
 	const lines: string[] = [];
 	for (const check of checks) {

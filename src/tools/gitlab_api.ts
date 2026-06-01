@@ -65,14 +65,14 @@ export function registerGitlabApi(pi: ExtensionAPI) {
 			const method = params.method ?? "GET";
 			const isMutating = MUTATING_METHODS.has(method);
 
-			if (method === "DELETE" && params.confirm !== true) {
+			if (isMutating && params.confirm !== true) {
 				return {
 					content: [
 						{
 							type: "text",
 							text:
-								"⚠️ DELETE requests require explicit `confirm: true`. " +
-								"This is a safety measure. Set confirm:true to proceed.",
+								"⚠️ Mutating GitLab API calls require explicit `confirm: true`. " +
+								"Set confirm:true to proceed, or use GET for read-only requests.",
 						},
 					],
 					details: { success: false, error: "confirmation_required" },
