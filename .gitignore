@@ -10,3 +10,4 @@ artifacts/
 
 # Phase 2 work intentionally excluded from Phase 1 package artifact
 _phase2/
+.primecodex.local.json

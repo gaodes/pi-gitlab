@@ -1,12 +1,14 @@
 {
 	"version": 1,
-	"updatedAt": "2026-06-01T02:49:33+0300",
+	"updatedAt": "2026-06-01T08:10:00+0300",
 	"kind": "package",
 	"name": "pi-gitlab",
 	"source": "ssh://git@gitlab-ssh.elches.dev:2222/agents/primecodex/packages/pi-gitlab.git",
 	"description": "Pi extension package for GitLab workflows via glab CLI.",
 	"topic": "gitlab",
-	"requires": ["glab>=1.40.0"],
+	"requires": [
+		"glab>=1.40.0"
+	],
 	"integrationStatus": "none",
 	"npm": {
 		"name": "@gaodes/pi-gitlab",
