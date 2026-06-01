@@ -7,11 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- Initial scaffold for `@gaodes/pi-gitlab` package.
-- Phase-based implementation plan baseline.
-
 ## [0.1.0] - 2026-06-01
 
-### Added
-- Package bootstrap, metadata, and placeholder extension/skills structure.
+### Added (Phase 1 — Read-only tools + diagnostics + wiring)
+- **Tools**: `gitlab_project_resolve`, `gitlab_mr_list`, `gitlab_mr_view`, `gitlab_issue_list`, `gitlab_pipeline_status`, `gitlab_job_logs`, `gitlab_api`
+- **Lib helpers**: `glab` runner, project cache, project fallback, project ID resolver, pagination, redaction, shared schemas
+- **Config**: `src/config/{types,loader,guard}.ts` with `prime-settings.json` integration
+- **Setup guard**: `requireSetup()` blocks all tools until `GITLAB_TOKEN` and config are valid
+- **Command**: `/gitlab-doctor` — checks glab version, auth, API connectivity, config state
+- **Events**: `resources_discover` exposes in-package `skills/` directory
+- **Wiring**: `src/index.ts` registers all tools, commands, and events
+- Package bootstrap, metadata, provenance, and placeholder skills structure

@@ -23,9 +23,12 @@ export async function glab(args: string[], cwd?: string): Promise<unknown> {
 		} catch {
 			return text;
 		}
-	} catch (err: any) {
+	} catch (err: unknown) {
 		const message =
-			err?.stderr || err?.stdout || err?.message || "glab command failed";
+			(err as { stderr?: string; stdout?: string; message?: string })?.stderr ||
+			(err as { stderr?: string; stdout?: string; message?: string })?.stdout ||
+			(err as { message?: string })?.message ||
+			"glab command failed";
 		throw new Error(String(message).trim());
 	}
 }
