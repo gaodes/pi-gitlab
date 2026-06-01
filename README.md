@@ -17,7 +17,7 @@ Requires `glab >= 1.40.0` and a `GITLAB_TOKEN` environment variable.
    glab auth status
    ```
 
-2. The extension auto-seeds `pi-gitlab` defaults into `~/.pi/agent/prime-settings.json` on first load.
+2. Set `GITLAB_TOKEN` and add a `pi-gitlab` configuration key to `prime-settings.json` (global or project). The extension blocks tool usage until both exist.
 
 3. Run diagnostics:
    ```
