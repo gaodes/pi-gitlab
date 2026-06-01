@@ -1,49 +1,49 @@
 {
-  "version": 1,
-  "updatedAt": "2026-06-01T02:49:33+0300",
-  "creationMethod": "inspiration",
-  "primary": {
-    "name": "gitlab-assistant-skills",
-    "type": "git",
-    "url": "https://github.com/grandcamel/gitlab-assistant-skills",
-    "repo": "https://github.com/grandcamel/gitlab-assistant-skills",
-    "license": "MIT",
-    "relationship": "inspiration",
-    "upstreamVersion": "main@2026-06-01"
-  },
-  "inspirations": [
-    {
-      "name": "claude-glab-skill",
-      "type": "git",
-      "url": "https://github.com/henricook/claude-glab-skill",
-      "repo": "https://github.com/henricook/claude-glab-skill",
-      "license": "MIT",
-      "relationship": "inspiration"
-    },
-    {
-      "name": "wenerme ai glab-cli",
-      "type": "git",
-      "url": "https://github.com/wenerme/ai/tree/main/skills/glab-cli",
-      "repo": "https://github.com/wenerme/ai",
-      "license": "MIT",
-      "relationship": "inspiration"
-    },
-    {
-      "name": "wenerme ai glab-docs",
-      "type": "git",
-      "url": "https://github.com/wenerme/ai/tree/main/skills/glab-docs",
-      "repo": "https://github.com/wenerme/ai",
-      "license": "MIT",
-      "relationship": "inspiration"
-    },
-    {
-      "name": "awesome-openclaw-skills glab",
-      "type": "git",
-      "url": "https://github.com/sundial-org/awesome-openclaw-skills/tree/main/skills/glab",
-      "repo": "https://github.com/sundial-org/awesome-openclaw-skills",
-      "license": "MIT",
-      "relationship": "inspiration"
-    }
-  ],
-  "updates": []
+	"version": 1,
+	"updatedAt": "2026-06-01T02:49:33+0300",
+	"creationMethod": "inspiration",
+	"primary": {
+		"name": "gitlab-assistant-skills",
+		"type": "git",
+		"url": "https://github.com/grandcamel/gitlab-assistant-skills",
+		"repo": "https://github.com/grandcamel/gitlab-assistant-skills",
+		"license": "MIT",
+		"relationship": "inspiration",
+		"upstreamVersion": "main@2026-06-01"
+	},
+	"inspirations": [
+		{
+			"name": "claude-glab-skill",
+			"type": "git",
+			"url": "https://github.com/henricook/claude-glab-skill",
+			"repo": "https://github.com/henricook/claude-glab-skill",
+			"license": "MIT",
+			"relationship": "inspiration"
+		},
+		{
+			"name": "wenerme ai glab-cli",
+			"type": "git",
+			"url": "https://github.com/wenerme/ai/tree/main/skills/glab-cli",
+			"repo": "https://github.com/wenerme/ai",
+			"license": "MIT",
+			"relationship": "inspiration"
+		},
+		{
+			"name": "wenerme ai glab-docs",
+			"type": "git",
+			"url": "https://github.com/wenerme/ai/tree/main/skills/glab-docs",
+			"repo": "https://github.com/wenerme/ai",
+			"license": "MIT",
+			"relationship": "inspiration"
+		},
+		{
+			"name": "awesome-openclaw-skills glab",
+			"type": "git",
+			"url": "https://github.com/sundial-org/awesome-openclaw-skills/tree/main/skills/glab",
+			"repo": "https://github.com/sundial-org/awesome-openclaw-skills",
+			"license": "MIT",
+			"relationship": "inspiration"
+		}
+	],
+	"updates": []
 }
