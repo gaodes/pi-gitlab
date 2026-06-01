@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-01
+
+### Added (Phase 2 — Mutating tools + confirmation UX)
+- **Mutating tools**: `gitlab_mr_create`, `gitlab_mr_merge`, `gitlab_issue_create`, `gitlab_issue_close`, `gitlab_pipeline_run`
+- **Confirmation UX**: `lib/confirm.ts` with `dryRun` preview + `confirm` gate for all write operations
+- **Safety**: DELETE in `gitlab_api` already gated; mutating tools follow same pattern
+
 ## [0.1.0] - 2026-06-01
 
 ### Added (Phase 1 — Read-only tools + diagnostics + wiring)

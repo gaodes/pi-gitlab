@@ -21,10 +21,15 @@ import { gitlabDoctorCommand } from "./commands/gitlab-doctor.js";
 import { registerResourcesDiscover } from "./events/resourcesDiscover.js";
 import { ensureConfig } from "./lib/env.js";
 import { registerGitlabApi } from "./tools/gitlab_api.js";
+import { registerGitlabIssueClose } from "./tools/gitlab_issue_close.js";
+import { registerGitlabIssueCreate } from "./tools/gitlab_issue_create.js";
 import { registerGitlabIssueList } from "./tools/gitlab_issue_list.js";
 import { registerGitlabJobLogs } from "./tools/gitlab_job_logs.js";
+import { registerGitlabMrCreate } from "./tools/gitlab_mr_create.js";
 import { registerGitlabMrList } from "./tools/gitlab_mr_list.js";
+import { registerGitlabMrMerge } from "./tools/gitlab_mr_merge.js";
 import { registerGitlabMrView } from "./tools/gitlab_mr_view.js";
+import { registerGitlabPipelineRun } from "./tools/gitlab_pipeline_run.js";
 import { registerGitlabPipelineStatus } from "./tools/gitlab_pipeline_status.js";
 import { registerGitlabProjectResolve } from "./tools/gitlab_project_resolve.js";
 
@@ -50,4 +55,11 @@ export default function piGitlab(pi: ExtensionAPI) {
 	registerGitlabPipelineStatus(pi);
 	registerGitlabJobLogs(pi);
 	registerGitlabApi(pi);
+
+	// Phase 2 mutating tools
+	registerGitlabMrCreate(pi);
+	registerGitlabMrMerge(pi);
+	registerGitlabIssueCreate(pi);
+	registerGitlabIssueClose(pi);
+	registerGitlabPipelineRun(pi);
 }
