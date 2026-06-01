@@ -57,12 +57,12 @@ export function registerGitlabMrList(pi: ExtensionAPI) {
 			ctx: ExtensionContext,
 		) {
 			try {
-				requireSetup();
-			} catch {
-				return setupRequiredResult();
-			}
-			const cwd = ctx.cwd;
-			const projectPath = await resolveProject(params.project, cwd);
+					requireSetup(ctx.cwd);
+				} catch {
+					return setupRequiredResult();
+				}
+
+				const projectPath = await resolveProject(params.project, ctx.cwd);
 			const projectId = await resolveProjectId(projectPath);
 
 			const query = new URLSearchParams();

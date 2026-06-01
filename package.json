@@ -12,7 +12,12 @@
 	"private": false,
 	"main": "./src/index.ts",
 	"files": [
-		"src",
+		"src/commands",
+		"src/config",
+		"src/events",
+		"src/index.ts",
+		"src/lib",
+		"src/tools",
 		"skills",
 		"README.md",
 		"CHANGELOG.md",

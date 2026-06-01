@@ -29,13 +29,12 @@ export function registerGitlabReleaseList(pi: ExtensionAPI) {
 		),
 		async execute(_toolCallId, params, _signal, _onUpdate, ctx: ExtensionContext) {
 			try {
-				requireSetup();
-			} catch {
-				return setupRequiredResult();
-			}
+					requireSetup(ctx.cwd);
+				} catch {
+					return setupRequiredResult();
+				}
 
-			const cwd = ctx.cwd;
-			const projectPath = await resolveProject(params.project, cwd);
+				const projectPath = await resolveProject(params.project, ctx.cwd);
 			const projectId = await resolveProjectId(projectPath);
 
 			const releases = (await glab([

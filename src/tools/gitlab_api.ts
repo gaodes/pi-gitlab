@@ -58,7 +58,7 @@ export function registerGitlabApi(pi: ExtensionAPI) {
 			ctx: ExtensionContext,
 		) {
 			try {
-				requireSetup();
+				requireSetup(ctx.cwd);
 			} catch {
 				return setupRequiredResult();
 			}

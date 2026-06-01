@@ -5,3 +5,6 @@ coverage/
 .pi-lens/
 graphify-out/
 .gitnexus/
+
+# Phase 2 work intentionally excluded from Phase 1 package artifact
+_phase2/

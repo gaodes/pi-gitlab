@@ -36,27 +36,20 @@ Requires `glab >= 1.40.0` and a `GITLAB_TOKEN` environment variable.
 | `gitlab_issue_list` | List issues with filters |
 | `gitlab_pipeline_status` | Check pipeline status for a ref |
 | `gitlab_job_logs` | Fetch CI job logs (redacted by default) |
-| `gitlab_api` | Raw glab API passthrough |
+| `gitlab_api` | Raw glab API passthrough. Mutating methods require `confirm:true`; without confirmation, returns preview-only result and does not execute |
 
-### Mutating (Phase 2)
+### Mutating / Advanced (deferred)
 
-| Tool | Description |
-|------|-------------|
-| `gitlab_mr_create` | Create a merge request |
-| `gitlab_mr_merge` | Merge an open MR |
-| `gitlab_issue_create` | Create an issue |
-| `gitlab_issue_close` | Close an issue |
-| `gitlab_pipeline_run` | Trigger a pipeline |
+Mutating and advanced tools are deferred out of the Phase 1 package build to keep v0.1.0 strictly read-only with a guarded `gitlab_api` passthrough.
 
-All mutating tools require `confirm: true` or `dryRun: true`.
+## Setup guard
 
-### Advanced (Phase 3)
+On load, the extension checks for:
 
-| Tool | Description |
-|------|-------------|
-| `gitlab_release_list` | List releases |
-| `gitlab_release_view` | View a release by tag |
-| `gitlab_release_create` | Create a release from a tag |
+1. `GITLAB_TOKEN` environment variable (or the env var named by `tokenEnv` in settings).
+2. `pi-gitlab` configuration in `prime-settings.json` (global or project).
+
+If either is missing, all tool calls are blocked. Phase 1 intentionally removes unconditional auto-seeding from extension load; use `/gitlab-doctor` to seed defaults and then configure the missing pieces manually before tools become usable.
 
 ## Commands
 

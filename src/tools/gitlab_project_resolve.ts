@@ -38,12 +38,12 @@ export function registerGitlabProjectResolve(pi: ExtensionAPI) {
 			ctx: ExtensionContext,
 		) {
 			try {
-				requireSetup();
-			} catch {
-				return setupRequiredResult();
-			}
-			const cwd = ctx.cwd;
-			const project = await resolveProject(params.project, cwd);
+					requireSetup(ctx.cwd);
+				} catch {
+					return setupRequiredResult();
+				}
+
+				const project = await resolveProject(params.project, ctx.cwd);
 			const id = await resolveProjectId(project, params.force);
 			return {
 				content: [

@@ -24,5 +24,5 @@ You are the entry point for GitLab workflows on `gitlab.elches.dev`.
 
 - Always prefer dedicated tools over raw `gitlab_api`.
 - If a project is not specified, tools fall back to the current git remote or settings default.
-- All mutating tools require `confirm: true` or `dryRun: true`.
+- All mutating API calls require `confirm: true`. Without confirmation, returns a preview-only result and does not execute.
 - Never expose tokens or credentials in output.
