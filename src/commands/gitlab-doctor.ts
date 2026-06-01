@@ -1,23 +1,14 @@
 /**
- * /gitlab-doctor — diagnostics command for pi-gitlab.
- *
- * Checks:
- *   1. glab CLI is installed and meets minimum version (1.40.0)
- *   2. glab authentication status
- *   3. API connectivity to configured GitLab host
- *   4. prime-settings.json configuration state
- *   5. env-var token presence
- *
- * Reports pass/fail for each check and surfaces actionable next steps.
+ * /gitlab-doctor — diagnostics and interactive setup for pi-gitlab.
  */
 
 import type {
 	ExtensionAPI,
 	ExtensionContext,
 } from "@earendil-works/pi-coding-agent";
-import { getApiHost } from "../lib/env.js";
 import { checkSetup } from "../config/guard.js";
-import { ensureConfig } from "../config/loader.js";
+import { loadConfig, writeConfig } from "../config/loader.js";
+import { getApiHost } from "../lib/env.js";
 
 const MIN_GLAB_VERSION = "1.40.0";
 
@@ -44,7 +35,6 @@ function versionSatisfies(installed: string, required: string): boolean {
 export async function runDoctor(pi: ExtensionAPI, cwd?: string): Promise<Check[]> {
 	const checks: Check[] = [];
 
-	// 1. glab installation and version
 	try {
 		const { stdout } = await pi.exec("glab", ["--version"]);
 		const versionMatch = stdout.match(/glab version ([\d.]+)/);
@@ -69,26 +59,20 @@ export async function runDoctor(pi: ExtensionAPI, cwd?: string): Promise<Check[]
 		checks.push({
 			label: "glab CLI",
 			status: "fail",
-			detail: `glab not found in PATH. Install from: https://gitlab.com/gitlab-org/cli#installation`,
+			detail: "glab not found in PATH. Install from: https://gitlab.com/gitlab-org/cli#installation",
 		});
 	}
 
-	// 2. glab authentication
 	try {
 		const { stdout, code } = await pi.exec("glab", ["auth", "status"]);
-		if (code === 0) {
-			checks.push({
-				label: "glab auth",
-				status: "pass",
-				detail: stdout.trim().split("\n")[0] ?? "Authenticated",
-			});
-		} else {
-			checks.push({
-				label: "glab auth",
-				status: "fail",
-				detail: "Not authenticated. Run `glab auth login` to authenticate.",
-			});
-		}
+		checks.push({
+			label: "glab auth",
+			status: code === 0 ? "pass" : "fail",
+			detail:
+				code === 0
+					? (stdout.trim().split("\n")[0] ?? "Authenticated")
+					: "Not authenticated. Run `glab auth login` to authenticate.",
+		});
 	} catch (err) {
 		checks.push({
 			label: "glab auth",
@@ -97,7 +81,6 @@ export async function runDoctor(pi: ExtensionAPI, cwd?: string): Promise<Check[]
 		});
 	}
 
-	// 3. API connectivity
 	const apiHost = getApiHost();
 	try {
 		const { code, stderr } = await pi.exec("glab", [
@@ -106,19 +89,14 @@ export async function runDoctor(pi: ExtensionAPI, cwd?: string): Promise<Check[]
 			"--hostname",
 			apiHost,
 		]);
-		if (code === 0) {
-			checks.push({
-				label: `GitLab API (${apiHost})`,
-				status: "pass",
-				detail: `API is reachable at ${apiHost}`,
-			});
-		} else {
-			checks.push({
-				label: `GitLab API (${apiHost})`,
-				status: "fail",
-				detail: `API request failed: ${stderr.trim()}`,
-			});
-		}
+		checks.push({
+			label: `GitLab API (${apiHost})`,
+			status: code === 0 ? "pass" : "fail",
+			detail:
+				code === 0
+					? `API is reachable at ${apiHost}`
+					: `API request failed: ${stderr.trim()}`,
+		});
 	} catch (err) {
 		checks.push({
 			label: `GitLab API (${apiHost})`,
@@ -127,53 +105,123 @@ export async function runDoctor(pi: ExtensionAPI, cwd?: string): Promise<Check[]
 		});
 	}
 
-	// 4. Config in prime-settings.json
-	ensureConfig();
 	const setupStatus = checkSetup(cwd);
 	const hasToken = !setupStatus.missingToken;
 	const hasExplicitConfig = !setupStatus.missingConfig;
 
 	checks.push({
-		label: "pi-gitlab config (prime-settings.json)",
+		label: "pi-gitlab token",
 		status: hasToken ? "pass" : "fail",
 		detail: hasToken
 			? `Token sourced from ${setupStatus.config.tokenEnv} environment variable`
-			: `No token found. Set ${setupStatus.config.tokenEnv} or configure pi-gitlab.token in prime-settings.json. Target host: ${setupStatus.config.hostname}`,
+			: `No token found. Set ${setupStatus.config.tokenEnv} in your shell or .env.1pass.`,
 	});
 
 	checks.push({
 		label: "pi-gitlab config key",
 		status: hasExplicitConfig ? "pass" : "fail",
 		detail: hasExplicitConfig
-			? "pi-gitlab configuration found in prime-settings.json"
-			: "Missing pi-gitlab configuration in prime-settings.json. Run the setup wizard or manually add the pi-gitlab key before using tools.",
+			? "pi-gitlab configuration key found in prime-settings.json"
+			: "Missing pi-gitlab configuration key in prime-settings.json",
 	});
 
-	// 5. Overall status
 	checks.push({
 		label: "pi-gitlab ready",
 		status: setupStatus.ready ? "pass" : "fail",
 		detail: setupStatus.ready
 			? "All checks passed — pi-gitlab tools are available."
-			: "Configuration incomplete — pi-gitlab tools will return a setup error until resolved.",
+			: "Configuration incomplete — tools remain blocked until setup completes.",
 	});
 
 	return checks;
 }
 
-/** Command handler — pi is passed via closure from the registerCall in index.ts */
+async function runSetupWizard(ctx: ExtensionContext): Promise<boolean> {
+	const current = loadConfig(ctx.cwd);
+	const proceed = await ctx.ui.confirm(
+		"Run pi-gitlab setup wizard?",
+		"pi-gitlab tools are blocked until config + token are valid. Start guided setup now?",
+	);
+	if (!proceed) return false;
+
+	const hostname =
+		(await ctx.ui.input("GitLab hostname", current.hostname)) ?? current.hostname;
+	const sshHostname =
+		(await ctx.ui.input("GitLab SSH hostname", current.sshHostname)) ??
+		current.sshHostname;
+	const sshPortRaw =
+		(await ctx.ui.input("GitLab SSH port", String(current.sshPort))) ??
+		String(current.sshPort);
+	const tokenEnv =
+		(await ctx.ui.input("Token environment variable name", current.tokenEnv)) ??
+		current.tokenEnv;
+	const defaultProjectPathInput =
+		(await ctx.ui.input(
+			"Default project path (optional)",
+			current.defaultProjectPath ?? "",
+		)) ?? "";
+
+	const sshPort = Number(sshPortRaw);
+	if (!Number.isInteger(sshPort) || sshPort <= 0) {
+		ctx.ui.notify("Invalid SSH port. Setup cancelled.", "error");
+		return false;
+	}
+
+	const defaultProjectPath = defaultProjectPathInput.trim() || null;
+
+	const confirm = await ctx.ui.confirm(
+		"Save pi-gitlab configuration?",
+		`Host: ${hostname}\nSSH: ${sshHostname}:${sshPort}\nToken env: ${tokenEnv}\nDefault project: ${defaultProjectPath ?? "(none)"}`,
+	);
+	if (!confirm) return false;
+
+	writeConfig({
+		hostname,
+		sshHostname,
+		sshPort,
+		tokenEnv,
+		defaultProjectPath,
+	});
+
+	ctx.ui.notify("Saved pi-gitlab configuration to global prime-settings.json", "info");
+
+	if (!process.env[tokenEnv] || process.env[tokenEnv]?.trim().length === 0) {
+		ctx.ui.notify(
+			`Token variable ${tokenEnv} is not set in the current environment. Set it (or load via .env.1pass) before using tools.`,
+			"warning",
+		);
+	}
+
+	return true;
+}
+
 export async function gitlabDoctorCommand(
 	_args: unknown,
 	ctx: ExtensionContext,
 	pi: ExtensionAPI,
 ): Promise<void> {
-	const checks = await runDoctor(pi, ctx.cwd);
+	let checks = await runDoctor(pi, ctx.cwd);
+	let status = checkSetup(ctx.cwd);
+
+	if (!status.ready) {
+		const configured = await runSetupWizard(ctx);
+		if (configured) {
+			checks = await runDoctor(pi, ctx.cwd);
+			status = checkSetup(ctx.cwd);
+		}
+	}
 
 	const lines: string[] = [];
 	for (const check of checks) {
 		const icon =
 			check.status === "pass" ? "✅" : check.status === "warn" ? "⚠️" : "❌";
 		lines.push(`${icon} **${check.label}**\n   ${check.detail}`);
+	}
+
+	if (!status.ready) {
+		lines.push(
+			"\n⚠️ **Setup incomplete**\n   Tools remain blocked until both token and `pi-gitlab` config are valid.",
+		);
 	}
 
 	ctx.ui.notify(lines.join("\n\n"), "info");

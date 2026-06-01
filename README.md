@@ -38,9 +38,27 @@ Requires `glab >= 1.40.0` and a `GITLAB_TOKEN` environment variable.
 | `gitlab_job_logs` | Fetch CI job logs (redacted by default) |
 | `gitlab_api` | Raw glab API passthrough. Mutating methods require `confirm:true`; without confirmation, returns preview-only result and does not execute |
 
-### Mutating / Advanced (deferred)
+### Mutating (Phase 2 — require `confirm:true`)
 
-Mutating and advanced tools are deferred out of the Phase 1 package build to keep v0.1.0 strictly read-only with a guarded `gitlab_api` passthrough.
+| Tool | Description |
+|------|-------------|
+| `gitlab_mr_create` | Create a merge request (title, description, draft, source/target branch) |
+| `gitlab_mr_merge` | Merge an open merge request |
+| `gitlab_issue_create` | Create an issue (title, description, labels, assignee, milestone) |
+| `gitlab_issue_close` | Close an issue or mark it as resolved |
+| `gitlab_pipeline_run` | Trigger a pipeline for a branch or tag |
+
+All mutating tools require `confirm: true` to execute. Set `confirm: false, dryRun: true` to preview the operation without executing it.
+
+### Advanced (Phase 3)
+
+| Tool | Description |
+|------|-------------|
+| `gitlab_release_list` | List releases for a project |
+| `gitlab_release_view` | View details of a single release |
+| `gitlab_release_create` | Create a release (confirm-gated mutating operation) |
+| `gitlab_mr_bulk_approve` | Approve multiple MRs matching a label/milestone filter (confirm-gated) |
+| `gitlab_force_push_safe` | Force-push with branch protection re-enable and confirmation gate |
 
 ## Setup guard
 
@@ -49,7 +67,7 @@ On load, the extension checks for:
 1. `GITLAB_TOKEN` environment variable (or the env var named by `tokenEnv` in settings).
 2. `pi-gitlab` configuration in `prime-settings.json` (global or project).
 
-If either is missing, all tool calls are blocked. Phase 1 intentionally removes unconditional auto-seeding from extension load; use `/gitlab-doctor` to seed defaults and then configure the missing pieces manually before tools become usable.
+If either is missing, all tool calls are blocked. Run `/gitlab-doctor` to launch the interactive setup wizard, save the `pi-gitlab` config key, and verify readiness.
 
 ## Commands
 
@@ -57,12 +75,18 @@ If either is missing, all tool calls are blocked. Phase 1 intentionally removes 
 
 ## Skills
 
-The package ships four in-package skills under `skills/`:
+The package ships six in-package skills under `skills/`:
 
 - `gitlab-assistant` — Hub router for GitLab operations
-- `gitlab-mr` — MR lifecycle patterns
-- `gitlab-issue` — Issue triage patterns
-- `gitlab-pipeline` — Pipeline diagnostics patterns
+- `gitlab-mr` — MR lifecycle patterns (view, list, create, merge)
+- `gitlab-issue` — Issue triage patterns (list, create, close)
+- `gitlab-pipeline` — Pipeline diagnostics patterns (status, logs, run)
+- `gitlab-release` — Release listing, viewing, and creation via `gitlab_api`
+- `gitlab-workflow` — Cross-domain orchestration: release cuts, hotfixes, issue-to-MR flows
+
+## Deprecation
+
+This package supersedes the legacy `glab-gitlab` skill. That skill is marked deprecated in Phase 3 and remains as a read-only fallback reference. New GitLab automation should use `@gaodes/pi-gitlab` exclusively.
 
 ## Configuration
 
@@ -99,3 +123,10 @@ The `project` parameter is optional on all tools. Resolution order:
 3. `defaultProjectPath` from settings
 
 Resolved IDs are cached in `~/.pi/agent/cache/pi-gitlab/projects.json`.
+
+
+
+---
+[GitNexus] 1 related symbols found:
+
+README.md (README.md)

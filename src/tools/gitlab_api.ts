@@ -15,7 +15,7 @@ export function registerGitlabApi(pi: ExtensionAPI) {
 		name: "gitlab_api",
 		label: "GitLab API Passthrough",
 		description:
-			"Raw glab api passthrough with automatic numeric-project-ID resolution. DELETE requires explicit confirmation.",
+			"Raw glab api passthrough with automatic numeric-project-ID resolution. Mutating methods require explicit confirmation.",
 		parameters: Type.Object(
 			{
 				method: Type.Optional(
@@ -44,7 +44,7 @@ export function registerGitlabApi(pi: ExtensionAPI) {
 				confirm: Type.Optional(
 					Type.Boolean({
 						description:
-							"Explicit confirmation flag required for DELETE. Mutating verbs print preview and proceed.",
+							"Explicit confirmation flag required for mutating methods (POST/PUT/PATCH/DELETE).",
 					}),
 				),
 			},

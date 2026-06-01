@@ -101,26 +101,34 @@ export function loadConfig(cwd?: string): PiGitlabConfig {
 	return base;
 }
 
-export function ensureConfig(): void {
-	if (existsSync(GLOBAL_SETTINGS_PATH)) {
-		try {
-			const raw = readFileSync(GLOBAL_SETTINGS_PATH, "utf-8");
-			const parsed = JSON.parse(raw) as Record<string, unknown>;
-			if (parsed["pi-gitlab"] !== undefined) return;
-		} catch {
-			// malformed file — fall through to rewrite
-		}
+function readGlobalSettings(): Record<string, unknown> {
+	if (!existsSync(GLOBAL_SETTINGS_PATH)) return {};
+	try {
+		return JSON.parse(readFileSync(GLOBAL_SETTINGS_PATH, "utf-8")) as Record<
+			string,
+			unknown
+		>;
+	} catch {
+		return {};
 	}
+}
+
+function writeGlobalSettings(payload: Record<string, unknown>): void {
+	const dir = join(homedir(), ".pi", "agent");
+	mkdirSync(dir, { recursive: true });
+	writeFileSync(
+		GLOBAL_SETTINGS_PATH,
+		`${JSON.stringify(payload, null, 2)}\n`,
+		"utf-8",
+	);
+}
+
+export function ensureConfig(): void {
+	const existing = readGlobalSettings();
+	if (existing["pi-gitlab"] !== undefined) return;
 
 	const defaults = cloneDefaults();
-	const existing: Record<string, unknown> = existsSync(GLOBAL_SETTINGS_PATH)
-		? (JSON.parse(readFileSync(GLOBAL_SETTINGS_PATH, "utf-8")) as Record<
-				string,
-				unknown
-			>)
-		: {};
-
-	const seed: Record<string, unknown> = {
+	writeGlobalSettings({
 		...existing,
 		"pi-gitlab": {
 			hostname: defaults.hostname,
@@ -134,19 +142,29 @@ export function ensureConfig(): void {
 			render: { ...defaults.render },
 			safety: { ...defaults.safety },
 		},
+	});
+}
+
+export function writeConfig(overrides: Partial<PiGitlabConfig>): PiGitlabConfig {
+	const existing = readGlobalSettings();
+	const base = cloneDefaults();
+	if (existing["pi-gitlab"] && typeof existing["pi-gitlab"] === "object") {
+		applyOverlay(base, existing["pi-gitlab"] as Record<string, unknown>);
+	}
+
+	const merged: PiGitlabConfig = {
+		...base,
+		...overrides,
+		render: { ...base.render, ...(overrides.render ?? {}) },
+		safety: { ...base.safety, ...(overrides.safety ?? {}) },
 	};
 
-	try {
-		const dir = join(homedir(), ".pi", "agent");
-		mkdirSync(dir, { recursive: true });
-		writeFileSync(
-			GLOBAL_SETTINGS_PATH,
-			`${JSON.stringify(seed, null, 2)}\n`,
-			"utf-8",
-		);
-	} catch (err) {
-		console.error("[pi-gitlab] Failed to seed prime-settings.json:", err);
-	}
+	writeGlobalSettings({
+		...existing,
+		"pi-gitlab": merged,
+	});
+
+	return merged;
 }
 
 export { GLOBAL_SETTINGS_PATH };

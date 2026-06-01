@@ -1,46 +1,70 @@
-import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
+import type {
+	ExtensionAPI,
+	ExtensionContext,
+} from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
 import { requireSetup, setupRequiredResult } from "../lib/errors.js";
 import { glab } from "../lib/glab.js";
 import { limitRows } from "../lib/pagination.js";
 import { resolveProject } from "../lib/projectFallback.js";
 import { resolveProjectId } from "../lib/resolveProjectId.js";
-import { OptionalProject, MaxRows } from "../lib/schemas.js";
+import { MaxRows, OptionalProject } from "../lib/schemas.js";
 
 interface Release {
 	tag_name: string;
-	name: string;
-	description?: string;
-	created_at: string;
+	name?: string;
 	author?: { name?: string };
+	created_at?: string;
+	upcoming_release?: boolean;
+	assets?: { count?: number };
 }
 
 export function registerGitlabReleaseList(pi: ExtensionAPI) {
 	pi.registerTool({
 		name: "gitlab_release_list",
 		label: "List Releases",
-		description: "List GitLab releases for a project.",
+		description:
+			"List releases for a project with transparent pagination.",
 		parameters: Type.Object(
 			{
 				project: OptionalProject,
+				sort: Type.Optional(
+					Type.Union(
+						[
+							Type.Literal("desc"),
+							Type.Literal("asc"),
+						],
+						{ default: "desc" },
+					),
+				),
 				maxRows: MaxRows,
 			},
 			{ additionalProperties: false },
 		),
-		async execute(_toolCallId, params, _signal, _onUpdate, ctx: ExtensionContext) {
+		async execute(
+			_toolCallId,
+			params,
+			_signal,
+			_onUpdate,
+			ctx: ExtensionContext,
+		) {
 			try {
-					requireSetup(ctx.cwd);
-				} catch {
-					return setupRequiredResult();
-				}
+				requireSetup(ctx.cwd);
+			} catch {
+				return setupRequiredResult();
+			}
 
-				const projectPath = await resolveProject(params.project, ctx.cwd);
+			const projectPath = await resolveProject(params.project, ctx.cwd);
 			const projectId = await resolveProjectId(projectPath);
+
+			const query = new URLSearchParams();
+			query.set("sort", params.sort ?? "desc");
+			query.set("per_page", "100");
 
 			const releases = (await glab([
 				"api",
 				"--paginate",
-				`projects/${projectId}/releases?per_page=100`,
+				`projects/${projectId}/releases?${query.toString()}`,
 			])) as Release[];
 
 			const limited = limitRows(releases, params.maxRows ?? 25);
@@ -51,10 +75,16 @@ export function registerGitlabReleaseList(pi: ExtensionAPI) {
 				};
 			}
 
-			const lines = ["| Tag | Name | Created | Author |", "|---|---|---|---|"];
-			for (const r of limited) {
+			const lines = [
+				"| Tag | Name | Author | Date | Upcoming |",
+				"|---|---|---|---|---|",
+			];
+			for (const rel of limited) {
+				const date = rel.created_at
+					? new Date(rel.created_at).toISOString().split("T")[0]
+					: "-";
 				lines.push(
-					`| ${r.tag_name} | ${r.name} | ${r.created_at.split("T")[0]} | ${r.author?.name ?? "-"} |`,
+					`| ${rel.tag_name} | ${rel.name ?? "-"} | ${rel.author?.name ?? "-"} | ${date} | ${rel.upcoming_release ? "yes" : "no"} |`,
 				);
 			}
 
