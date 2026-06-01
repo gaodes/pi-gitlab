@@ -1,59 +1,49 @@
 ---
 name: gitlab-mr
 description: >
-  Merge request lifecycle on gitlab.elches.dev — list, view, review, and
-  checkout. Use when the user mentions MR, merge request, pull request,
-  review, or draft. Phase 1 is read-only; create, approve, and merge
-  operations arrive in Phase 2.
+  Merge request lifecycle support for GitLab. Use for creating, listing,
+  viewing, and merging MRs with confirmation UX.
 ---
 
-# GitLab Merge Requests
+# GitLab MR Skill
 
-Manage merge requests on the local GitLab instance via Pi tools.
+## Patterns
 
-## Phase 1 scope (v0.1.0 — read-only)
-
-### Available tools
-
-| Tool                 | What it does                                                              |
-| -------------------- | ------------------------------------------------------------------------- |
-| `gitlab_mr_list`     | List MRs with filters: `state`, `author`, `assignee`, `reviewer`, `labels`, `targetBranch`, `sourceBranch`, `maxRows`. |
-| `gitlab_mr_view`     | View a single MR with metadata, pipeline status, discussions, and optional diff. Params: `mrId` (required), `includeDiff`, `includeDiscussions`. |
-| `gitlab_project_resolve` | Resolve project path to numeric ID (usually automatic via tool fallback). |
-
-### Common workflows
-
-**List open MRs for the current project:**
+### List open MRs
 ```
-gitlab_mr_list() → shows table of IID, Title, Author, State, Pipeline, Target
+gitlab_mr_list({ project: "namespace/project" })
 ```
 
-**Filter MRs by author and label:**
+### View MR details
 ```
-gitlab_mr_list({ author: "username", labels: ["ready-for-review"] })
-```
-
-**View a specific MR with diff and discussions:**
-```
-gitlab_mr_view({ mrId: 42, includeDiff: true, includeDiscussions: true })
+gitlab_mr_view({ project: "namespace/project", mrId: 42 })
 ```
 
-### Deferred to Phase 2 (v0.2.0)
+### Create MR
+```
+gitlab_mr_create({
+  project: "namespace/project",
+  sourceBranch: "feature/x",
+  targetBranch: "main",
+  title: "Add feature X",
+  description: "## Summary\n...",
+  confirm: true
+})
+```
 
-- `gitlab_mr_create` — create new merge requests
-- `gitlab_mr_approve` — approve MRs
-- `gitlab_mr_merge` — merge MRs
-- `gitlab_mr_rebase` — rebase MR source branches
-- `gitlab_mr_checkout` — checkout MR branch locally
+### Merge MR
+```
+gitlab_mr_merge({
+  project: "namespace/project",
+  mrId: 42,
+  squash: true,
+  confirm: true
+})
+```
 
-Until Phase 2 lands, use `gitlab_api` with `method: "POST"` and `confirm: true` for one-off mutations.
+## Rules
 
-## ⚠️ Local instance rules (gitlab.elches.dev)
-
-> **Always use `glab api` with numeric project IDs.** Path-encoded URLs (`%2F`) fail with HTTP 400 due to the reverse proxy decoding the slashes before GitLab sees them.
->
-> **High-level `glab` commands are non-functional** (`glab mr list`, `glab mr view`, etc.) — the SSH remote `gitlab-ssh.elches.dev` differs from the HTTPS host `gitlab.elches.dev`.
->
-> Prefer Pi tools (`gitlab_mr_*`) — they resolve project IDs internally and use `glab api` correctly.
->
-> If you must shell out directly: resolve the numeric ID first via `gitlab_project_resolve` or `glab api "projects?search=NAME"`.
+- Always preview with `dryRun: true` before mutating.
+- Require `confirm: true` for create and merge.
+- Check pipeline status before merging.
+- Never merge without user confirmation.
