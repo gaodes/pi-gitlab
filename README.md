@@ -8,7 +8,7 @@ Pi extension package for GitLab workflows on `gitlab.elches.dev` using `glab` + 
 npm install @gaodes/pi-gitlab
 ```
 
-Requires `glab >= 1.40.0` and a `GITLAB_TOKEN` environment variable.
+Requires `glab >= 1.40.0` and a `PI_GITLAB_TOKEN` environment variable.
 
 ## Quick Start
 
@@ -17,7 +17,7 @@ Requires `glab >= 1.40.0` and a `GITLAB_TOKEN` environment variable.
    glab auth status
    ```
 
-2. Set `GITLAB_TOKEN` and add a `pi-gitlab` configuration key to `prime-settings.json` (global or project). The extension blocks tool usage until both exist.
+2. Set `PI_GITLAB_TOKEN` and add a `pi-gitlab` configuration key to `prime-settings.json` (global or project). The extension blocks tool usage until both exist.
 
 3. Run diagnostics:
    ```
@@ -64,7 +64,7 @@ All mutating tools require `confirm: true` to execute. Set `confirm: false, dryR
 
 On load, the extension checks for:
 
-1. `GITLAB_TOKEN` environment variable (or the env var named by `tokenEnv` in settings).
+1. `PI_GITLAB_TOKEN` environment variable (or the env var named by `tokenEnv` in settings).
 2. `pi-gitlab` configuration in `prime-settings.json` (global or project).
 
 If either is missing, all tool calls are blocked. Run `/gitlab-doctor` to launch the interactive setup wizard, save the `pi-gitlab` config key, and verify readiness.
@@ -98,7 +98,7 @@ Key: `pi-gitlab` in `~/.pi/agent/prime-settings.json`
     "hostname": "gitlab.elches.dev",
     "sshHostname": "gitlab-ssh.elches.dev",
     "sshPort": 2222,
-    "tokenEnv": "GITLAB_TOKEN",
+    "tokenEnv": "PI_GITLAB_TOKEN",
     "defaultProjectPath": null,
     "render": {
       "tableMaxRows": 25,

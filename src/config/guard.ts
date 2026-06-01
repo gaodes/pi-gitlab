@@ -15,7 +15,7 @@ export interface SetupStatus {
 /**
  * Check prerequisites for the pi-gitlab extension.
  *
- * Returns ready=true only when both GITLAB_TOKEN is set AND the
+ * Returns ready=true only when both PI_GITLAB_TOKEN is set AND the
  * pi-gitlab key exists in prime-settings.json (global or project).
  *
  * The key alone is not enough; the extension intentionally blocks

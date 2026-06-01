@@ -55,7 +55,7 @@ export function mapGlabError(
 			stderr.includes("authentication required")
 		) {
 			return new GlabError(
-				"GitLab authentication failed. Check GITLAB_TOKEN.",
+				"GitLab authentication failed. Check PI_GITLAB_TOKEN.",
 				GlabErrorCode.AUTH_FAILED,
 				err,
 				stderr,

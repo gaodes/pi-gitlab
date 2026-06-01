@@ -6,6 +6,7 @@ coverage/
 graphify-out/
 .gitnexus/
 artifacts/
+.claude/
 
 # Phase 2 work intentionally excluded from Phase 1 package artifact
 _phase2/

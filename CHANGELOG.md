@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Default token environment variable renamed from `GITLAB_TOKEN` to `PI_GITLAB_TOKEN` to avoid collisions with other tools. The `tokenEnv` setting still allows overriding to any custom env var.
+
 ## [0.3.0] - 2026-06-01
 
 ### Added (Phase 3 — Advanced tools + hardening + deprecation)

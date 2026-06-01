@@ -28,7 +28,7 @@ export const DEFAULT_CONFIG: PiGitlabConfig = {
 	sshPort: 2222,
 	apiBase: "https://gitlab.elches.dev/api/v4",
 	tokenRef: null,
-	tokenEnv: "GITLAB_TOKEN",
+	tokenEnv: "PI_GITLAB_TOKEN",
 	defaultProjectId: null,
 	defaultProjectPath: null,
 	render: {

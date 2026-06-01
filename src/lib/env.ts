@@ -1,7 +1,7 @@
 /**
  * Environment / config helpers for pi-gitlab.
  *
- * Phase 1 hard guard: tools must block until both GITLAB_TOKEN and
+ * Phase 1 hard guard: tools must block until both PI_GITLAB_TOKEN and
  * pi-gitlab config are present. Auto-seeding is intentionally
  * removed from extension load; seeding now lives in explicit doctor/setup flows.
  */
@@ -22,7 +22,7 @@ export { GLOBAL_SETTINGS_PATH, ensureConfig, loadConfig };
 /** Get the effective GitLab token from env or config. */
 export function getToken(): string | undefined {
 	const config = loadConfig();
-	const envKey = config.tokenEnv || "GITLAB_TOKEN";
+	const envKey = config.tokenEnv || "PI_GITLAB_TOKEN";
 	const val = process.env[envKey];
 	return val?.trim() ? val.trim() : undefined;
 }
